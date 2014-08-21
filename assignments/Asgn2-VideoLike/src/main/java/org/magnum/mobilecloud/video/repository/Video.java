@@ -1,5 +1,14 @@
 package org.magnum.mobilecloud.video.repository;
 
+import java.util.Set;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import com.google.common.base.Objects;
 
 /**
@@ -16,14 +25,20 @@ import com.google.common.base.Objects;
  * 
  * @author mitchell
  */
+@Entity
 public class Video {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
 	private String name;
 	private String url;
 	private long duration;
 	private long likes;
+	
+	@ElementCollection(fetch=FetchType.EAGER)
+	private Set<String> likedUsers;
 	
 	public Video() {
 	}
@@ -76,6 +91,38 @@ public class Video {
 		this.likes = likes;
 	}
 	
+	public void incrementLikeByOne() {
+		this.likes = this.likes + 1; 
+	}
+	
+	public void decrementLikeByOne() {
+		this.likes = this.likes - 1;
+	}
+	
+	public Set<String> getLikedUsers() {
+		return likedUsers;
+	}
+
+	public void setLikedUsers(Set<String> likedUsers) {
+		this.likedUsers = likedUsers;
+	}
+	
+	public boolean addLikedUser(String likedUser) {
+		if (!this.likedUsers.contains(likedUser)) {
+			return this.likedUsers.add(likedUser);
+		}
+		
+		return false;
+	}
+	
+	public boolean removeLikedUser(String likedUser) {
+		if (this.likedUsers.contains(likedUser)) {
+			return this.likedUsers.remove(likedUser);
+		}
+		
+		return false;
+	}
+
 	/**
 	 * Two Videos will generate the same hashcode if they have exactly the same
 	 * values for their name, url, and duration.
